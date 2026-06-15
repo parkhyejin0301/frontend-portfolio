@@ -1,12 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
+import s from "./Portfolio.module.css";
 
-/* ──────────────────────────────────────────────────────────────
-   여기만 본인 내용으로 바꾸면 사이트 전체가 바뀝니다.
-   (이 data 객체가 사이트의 모든 텍스트를 담고 있어요)
-   ────────────────────────────────────────────────────────────── */
-// 아래 두 이미지를 프로젝트의 public/images/ 폴더에 넣어주세요.
-// BASE_URL은 vite.config.js의 base 값("/" 또는 "/portfolio/")을 자동으로 따라갑니다.
-// 덕분에 루트 배포든 서브경로(/portfolio) 배포든 이미지 경로가 알아서 맞춰집니다.
 const base = import.meta.env.BASE_URL;
 const designImg = `${base}images/design-components.jpg`;
 const boImg = `${base}images/bo-ip-management.jpg`;
@@ -27,12 +21,44 @@ const data = {
     "맡은 화면만 그리는 데서 멈추지 않고 공통 인프라·디자인 시스템·성능·데이터 드리븐 개선까지 도메인 전반을 책임지는 작업을 해왔습니다. 모르는 영역도 끝까지 파고드는 성실함과 새로운 기술·도메인을 빠르게 흡수하는 배움의 태도를 가장 큰 강점으로 생각합니다.",
   ],
   skills: [
-    { group: "Core", items: ["React", "Vue", "TypeScript", "JavaScript (ES6+)"] },
-    { group: "Styling / DS", items: ["Tailwind CSS", "디자인 컴포넌트", "공통 Composables", "반응형 / 웹 접근성"] },
-    { group: "Data / Quality", items: ["Mixpanel", "DataDog", "A/B Testing", "트래킹 이벤트 설계"] },
-    { group: "Performance / Infra", items: ["Core Web Vitals", "SSR Hydration", "date-fns / dayjs", "BO 보안·권한"] },
+    {
+      group: "Core",
+      items: ["React", "Vue", "TypeScript", "JavaScript (ES6+)"],
+    },
+    {
+      group: "Styling / DS",
+      items: [
+        "Tailwind CSS",
+        "디자인 컴포넌트",
+        "공통 Composables",
+        "반응형 / 웹 접근성",
+      ],
+    },
+    {
+      group: "Data / Quality",
+      items: ["Mixpanel", "DataDog", "A/B Testing", "트래킹 이벤트 설계"],
+    },
+    {
+      group: "Performance / Infra",
+      items: [
+        "Core Web Vitals",
+        "SSR Hydration",
+        "date-fns / dayjs",
+        "BO 보안·권한",
+      ],
+    },
   ],
   projects: [
+    {
+      title: "API 연동 · 서버 상태 관리",
+      year: "아정당",
+      kind: "Integration",
+      tagline: "REST API 협업과 안정적인 프론트–서버 데이터 연동",
+      description:
+        "백엔드 스펙을 분석해 REST API를 연동하고, 로딩·에러·빈 상태를 포함한 화면 상태를 설계했습니다. 인증 토큰 갱신·요청 재시도·도메인별 API 레이어 분리로 프론트엔드와 서버 간 데이터 흐름을 안정적으로 유지했습니다.",
+      tech: ["REST API", "TypeScript", "React", "Vue"],
+      links: [],
+    },
     {
       title: "가격변동 · 셀프톡",
       year: "아정당",
@@ -41,7 +67,9 @@ const data = {
       description:
         "도메인 요구사항을 직접 분석해 가격변동·셀프톡 등 대형 신규 기능을 설계·구현했습니다. 단순 화면 구현을 넘어 기능 전반을 책임지는 방식으로 작업해 서비스 핵심 플로우에 안착시켰습니다.",
       tech: ["React", "Vue", "TypeScript"],
-      links: [{ label: "Live", href: "https://ajdphone.co.kr/phone/mno/deals" }],
+      links: [
+        { label: "Live", href: "https://ajdphone.co.kr/phone/mno/deals" },
+      ],
     },
     {
       title: "디자인 시스템 · 공통 인프라",
@@ -85,8 +113,14 @@ const data = {
       tech: ["HTML5", "CSS3", "JavaScript", "웹 접근성"],
       links: [
         { label: "예림도어", href: "https://www.yerim.net/kor/main/main.html" },
-        { label: "더벤티", href: "https://theventi.co.kr/new2022/main/main.html" },
-        { label: "코코도르", href: "https://cocodorcorp.com/kor/main/main.html" },
+        {
+          label: "더벤티",
+          href: "https://theventi.co.kr/new2022/main/main.html",
+        },
+        {
+          label: "코코도르",
+          href: "https://cocodorcorp.com/kor/main/main.html",
+        },
         { label: "현대경제연구원", href: "https://www.hri.co.kr/kor/main" },
       ],
     },
@@ -113,46 +147,24 @@ const data = {
   ],
 };
 
-/* ── 디자인 토큰 ───────────────────────────────────────────── */
-const c = {
-  bg: "#FFFFFF",
-  bgAlt: "#F6F6F2",
-  ink: "#141413",
-  muted: "#76766E",
-  line: "#E8E8E2",
-  accent: "#1B33E8",
-};
-const display = "'Space Grotesk', system-ui, sans-serif";
-const body = "'Inter', system-ui, sans-serif";
-const mono = "'JetBrains Mono', ui-monospace, monospace";
-
 /* 섹션 라벨 — 작은 액센트 막대 + 대문자 트래킹 */
 function Label({ children }) {
   return (
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 10,
-        fontFamily: mono,
-        fontSize: 12,
-        fontWeight: 500,
-        letterSpacing: "0.18em",
-        color: c.muted,
-        textTransform: "uppercase",
-      }}
-    >
-      <span
-        aria-hidden="true"
-        style={{ width: 22, height: 2, background: c.accent, display: "inline-block" }}
-      />
+    <span className={s.label}>
+      <span aria-hidden="true" className={s.labelBar} />
       {children}
     </span>
   );
 }
 
 /* 스크롤 진입 시 부드럽게 나타나는 래퍼 */
-function Reveal({ children, delay = 0, as: Tag = "div", style = {}, ...rest }) {
+function Reveal({
+  children,
+  delay = 0,
+  as: Tag = "div",
+  className = "",
+  ...rest
+}) {
   const ref = useRef(null);
   const [shown, setShown] = useState(false);
   useEffect(() => {
@@ -181,12 +193,8 @@ function Reveal({ children, delay = 0, as: Tag = "div", style = {}, ...rest }) {
   return (
     <Tag
       ref={ref}
-      style={{
-        opacity: shown ? 1 : 0,
-        transform: shown ? "translateY(0)" : "translateY(16px)",
-        transition: `opacity 0.7s ease ${delay}ms, transform 0.7s cubic-bezier(0.22,1,0.36,1) ${delay}ms`,
-        ...style,
-      }}
+      className={`${s.reveal} ${shown ? s.revealShown : ""} ${className}`.trim()}
+      style={{ "--reveal-delay": `${delay}ms` }}
       {...rest}
     >
       {children}
@@ -196,67 +204,22 @@ function Reveal({ children, delay = 0, as: Tag = "div", style = {}, ...rest }) {
 
 /* 클릭하면 펼쳐지는 프로젝트 행 */
 function ProjectRow({ project, index, open, onToggle }) {
-  const [hover, setHover] = useState(false);
   return (
-    <div style={{ borderTop: `1px solid ${c.line}` }}>
-      <button
-        onClick={onToggle}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        aria-expanded={open}
-        className="pf-row"
-        style={{
-          width: "100%",
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          textAlign: "left",
-          padding: "28px 0",
-          display: "grid",
-          gridTemplateColumns: "44px 1fr auto",
-          gap: 20,
-          alignItems: "baseline",
-          color: c.ink,
-        }}
-      >
-        <span style={{ fontFamily: mono, fontSize: 13, color: c.muted }}>
+    <div className={s.projectRow}>
+      <button onClick={onToggle} aria-expanded={open} className={s.projectBtn}>
+        <span className={s.projectIndex}>
           {String(index + 1).padStart(2, "0")}
         </span>
         <span>
           <span
-            style={{
-              fontFamily: display,
-              fontSize: "clamp(1.5rem, 4vw, 2.4rem)",
-              fontWeight: 600,
-              lineHeight: 1.05,
-              color: hover || open ? c.accent : c.ink,
-              transition: "color 0.25s ease",
-              display: "block",
-            }}
+            className={`${s.projectTitle} ${open ? s.projectTitleOpen : ""}`.trim()}
           >
             {project.title}
           </span>
-          <span
-            style={{
-              fontFamily: body,
-              fontSize: 15,
-              color: c.muted,
-              marginTop: 6,
-              display: "block",
-            }}
-          >
-            {project.tagline}
-          </span>
+          <span className={s.projectTagline}>{project.tagline}</span>
         </span>
         <span
-          style={{
-            fontFamily: mono,
-            fontSize: 12,
-            color: c.muted,
-            whiteSpace: "nowrap",
-            transform: open ? "rotate(45deg)" : "none",
-            transition: "transform 0.3s ease",
-          }}
+          className={`${s.projectToggle} ${open ? s.projectToggleOpen : ""}`.trim()}
           aria-hidden="true"
         >
           +
@@ -265,77 +228,42 @@ function ProjectRow({ project, index, open, onToggle }) {
 
       {/* grid-template-rows 트릭으로 높이를 부드럽게 애니메이션 */}
       <div
-        style={{
-          display: "grid",
-          gridTemplateRows: open ? "1fr" : "0fr",
-          transition: "grid-template-rows 0.4s cubic-bezier(0.22,1,0.36,1)",
-        }}
+        className={`${s.projectPanel} ${open ? s.projectPanelOpen : ""}`.trim()}
       >
-        <div style={{ overflow: "hidden" }}>
-          <div
-            style={{
-              padding: "0 0 32px 64px",
-              maxWidth: 640,
-            }}
-          >
-            <p
-              style={{
-                fontFamily: body,
-                fontSize: 16,
-                lineHeight: 1.65,
-                color: c.ink,
-                margin: "0 0 18px",
-              }}
-            >
-              {project.description}
-            </p>
+        <div className={s.projectPanelInner}>
+          <div className={s.projectBody}>
+            <p className={s.projectDesc}>{project.description}</p>
             {project.image && (
               <a
                 href={project.image}
                 target="_blank"
                 rel="noreferrer"
-                style={{ display: "block", marginBottom: 18 }}
+                className={s.projectImageLink}
               >
                 <img
                   src={project.image}
                   alt={`${project.title} 미리보기`}
                   loading="lazy"
-                  style={{
-                    width: "100%",
-                    display: "block",
-                    border: `1px solid ${c.line}`,
-                    borderRadius: 10,
-                  }}
+                  className={s.projectImage}
                 />
               </a>
             )}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 }}>
+            <div className={s.techList}>
               {project.tech.map((t) => (
-                <span
-                  key={t}
-                  style={{
-                    fontFamily: mono,
-                    fontSize: 12,
-                    color: c.muted,
-                    border: `1px solid ${c.line}`,
-                    borderRadius: 999,
-                    padding: "4px 12px",
-                  }}
-                >
+                <span key={t} className={s.techTag}>
                   {t}
                 </span>
               ))}
             </div>
             {project.links && project.links.length > 0 && (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 22 }}>
+              <div className={s.linkList}>
                 {project.links.map((l) => (
                   <a
                     key={l.label}
-                    className="pf-link"
+                    className={s.link}
                     href={l.href}
                     target={l.href.startsWith("#") ? undefined : "_blank"}
                     rel="noreferrer"
-                    style={linkStyle}
                   >
                     {l.label} →
                   </a>
@@ -349,371 +277,177 @@ function ProjectRow({ project, index, open, onToggle }) {
   );
 }
 
-const linkStyle = {
-  fontFamily: mono,
-  fontSize: 13,
-  color: c.accent,
-  textDecoration: "none",
-  borderBottom: `1px solid transparent`,
-  paddingBottom: 2,
-};
-
 export default function Portfolio() {
   const { profile, about, skills, projects, experience, socials } = data;
   const [openProject, setOpenProject] = useState(0);
+  const heroRef = useRef(null);
 
-  const section = {
-    maxWidth: 960,
-    margin: "0 auto",
-    padding: "0 24px",
+  // 마우스를 따라 히어로 광채(--mx/--my) 위치 갱신
+  const onHeroMove = (e) => {
+    const el = heroRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+    el.style.setProperty("--my", `${e.clientY - rect.top}px`);
   };
 
   return (
-    <div style={{ background: c.bg, color: c.ink, fontFamily: body }}>
-      {/* 폰트 + 의사클래스(hover/focus) + 키프레임은 style 블록에서 처리 */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-        * { box-sizing: border-box; }
-        .pf-root ::selection { background: ${c.accent}; color: #fff; }
-        .pf-row:hover { background: ${c.bgAlt}; }
-        .pf-link:hover { border-bottom-color: ${c.accent} !important; }
-        .pf-nav a { position: relative; }
-        .pf-nav a::after {
-          content: ""; position: absolute; left: 0; bottom: -3px;
-          width: 0; height: 1px; background: ${c.accent}; transition: width 0.25s ease;
-        }
-        .pf-nav a:hover::after { width: 100%; }
-        a:focus-visible, button:focus-visible {
-          outline: 2px solid ${c.accent}; outline-offset: 3px; border-radius: 2px;
-        }
-        @media (max-width: 640px) {
-          .pf-nav-links { display: none; }
-        }
-      `}</style>
-
-      <div className="pf-root">
-        {/* ── 상단 내비게이션 ── */}
-        <nav
-          className="pf-nav"
-          style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
-            background: "rgba(255,255,255,0.8)",
-            backdropFilter: "saturate(180%) blur(12px)",
-            WebkitBackdropFilter: "saturate(180%) blur(12px)",
-            borderBottom: `1px solid ${c.line}`,
-          }}
-        >
-          <div
-            style={{
-              ...section,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              height: 64,
-            }}
-          >
-            <span style={{ fontFamily: mono, fontWeight: 500, fontSize: 15 }}>
-              {profile.initials}
-              <span style={{ color: c.accent }}>.</span>
-            </span>
-            <div
-              className="pf-nav-links"
-              style={{ display: "flex", gap: 28, fontFamily: mono, fontSize: 13 }}
-            >
-              {["work", "about", "experience", "contact"].map((s) => (
-                <a key={s} href={`#${s}`} style={{ color: c.ink, textDecoration: "none" }}>
-                  {s}
-                </a>
-              ))}
-            </div>
+    <div>
+      {/* ── 상단 내비게이션 ── */}
+      <nav className={s.nav}>
+        <div className={`${s.section} ${s.navInner}`}>
+          <span className={s.navBrand}>
+            {profile.initials}
+            <span className={s.navAccent}>.</span>
+          </span>
+          <div className={s.navLinks}>
+            {["work", "about", "experience", "contact"].map((item) => (
+              <a key={item} href={`#${item}`} className={s.navLink}>
+                {item}
+              </a>
+            ))}
           </div>
-        </nav>
+        </div>
+      </nav>
 
-        {/* ── 히어로 ── */}
-        <header style={{ ...section, paddingTop: "clamp(72px, 14vh, 160px)", paddingBottom: 80 }}>
+      {/* ── 히어로 ── */}
+      <header
+        className={`${s.section} ${s.header}`}
+        onMouseMove={onHeroMove}
+        ref={heroRef}
+      >
+        <div className={s.heroAmbient} aria-hidden="true" />
+        <div className={s.heroGlow} aria-hidden="true" />
+        <div className={s.heroContent}>
           {profile.available && (
-            <Reveal style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 28 }}>
-              <span
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  background: "#16a34a",
-                  boxShadow: "0 0 0 3px rgba(22,163,74,0.15)",
-                }}
-              />
-              <span style={{ fontFamily: mono, fontSize: 13, color: c.muted }}>
-                Available for work
-              </span>
+            <Reveal className={s.availBadge}>
+              <span className={s.availDot} />
+              <span className={s.availText}>Available for work</span>
             </Reveal>
           )}
-          <Reveal
-            as="h1"
-            delay={60}
-            style={{
-              fontFamily: display,
-              fontWeight: 700,
-              fontSize: "clamp(3rem, 11vw, 7rem)",
-              lineHeight: 0.98,
-              letterSpacing: "-0.03em",
-              margin: 0,
-            }}
-          >
+          <Reveal as="h1" delay={60} className={s.heroName}>
             {profile.name}
           </Reveal>
-          <Reveal
-            delay={120}
-            style={{
-              fontFamily: mono,
-              fontSize: "clamp(0.95rem, 2.4vw, 1.15rem)",
-              color: c.accent,
-              marginTop: 18,
-            }}
-          >
+          <Reveal delay={120} className={s.heroRole}>
             {profile.role}
           </Reveal>
-          <Reveal
-            as="p"
-            delay={180}
-            style={{
-              fontSize: "clamp(1.05rem, 2.6vw, 1.35rem)",
-              lineHeight: 1.5,
-              color: c.ink,
-              maxWidth: 620,
-              marginTop: 28,
-            }}
-          >
+          <Reveal as="p" delay={180} className={s.heroTagline}>
             {profile.tagline}
           </Reveal>
-          <Reveal
-            delay={240}
-            style={{ display: "flex", gap: 24, marginTop: 36, fontFamily: mono, fontSize: 13 }}
-          >
-            <a className="pf-link" href={`mailto:${profile.email}`} style={linkStyle}>
+          <Reveal delay={240} className={s.heroMeta}>
+            <a className={s.link} href={`mailto:${profile.email}`}>
               {profile.email}
             </a>
-            <span style={{ color: c.muted }}>{profile.location}</span>
+            <span className={s.heroLocation}>{profile.location}</span>
           </Reveal>
-        </header>
+        </div>
+      </header>
 
-        {/* ── 프로젝트 ── */}
-        <section id="work" style={{ ...section, paddingTop: 40, paddingBottom: 80 }}>
-          <Reveal style={{ marginBottom: 8 }}>
-            <Label>selected work</Label>
-          </Reveal>
-          <div>
-            {projects.map((p, i) => (
-              <Reveal key={p.title} delay={i * 60}>
-                <ProjectRow
-                  project={p}
-                  index={i}
-                  open={openProject === i}
-                  onToggle={() => setOpenProject(openProject === i ? -1 : i)}
-                />
-              </Reveal>
-            ))}
-            <div style={{ borderTop: `1px solid ${c.line}` }} />
-          </div>
-        </section>
-
-        {/* ── 소개 + 스킬 ── */}
-        <section id="about" style={{ background: c.bgAlt, borderTop: `1px solid ${c.line}`, borderBottom: `1px solid ${c.line}` }}>
-          <div style={{ ...section, paddingTop: 80, paddingBottom: 80 }}>
-            <Reveal style={{ marginBottom: 24 }}>
-              <Label>about</Label>
-            </Reveal>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "minmax(0, 1.3fr) minmax(0, 1fr)",
-                gap: 56,
-                alignItems: "start",
-              }}
-              className="pf-about-grid"
-            >
-              <Reveal>
-                {about.map((para, i) => (
-                  <p
-                    key={i}
-                    style={{
-                      fontSize: "clamp(1.1rem, 2.6vw, 1.4rem)",
-                      lineHeight: 1.6,
-                      margin: i === 0 ? "0 0 20px" : 0,
-                      color: c.ink,
-                    }}
-                  >
-                    {para}
-                  </p>
-                ))}
-              </Reveal>
-              <Reveal delay={120} style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-                {skills.map((s) => (
-                  <div key={s.group}>
-                    <div
-                      style={{
-                        fontFamily: mono,
-                        fontSize: 12,
-                        color: c.muted,
-                        marginBottom: 8,
-                        letterSpacing: "0.05em",
-                      }}
-                    >
-                      {s.group}
-                    </div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                      {s.items.map((it) => (
-                        <span
-                          key={it}
-                          style={{
-                            fontFamily: body,
-                            fontSize: 14,
-                            color: c.ink,
-                            background: c.bg,
-                            border: `1px solid ${c.line}`,
-                            borderRadius: 6,
-                            padding: "5px 11px",
-                          }}
-                        >
-                          {it}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </Reveal>
-            </div>
-          </div>
-        </section>
-
-        {/* ── 경력 ── */}
-        <section id="experience" style={{ ...section, paddingTop: 80, paddingBottom: 80 }}>
-          <Reveal style={{ marginBottom: 32 }}>
-            <Label>experience</Label>
-          </Reveal>
-          {experience.map((e, i) => (
-            <Reveal key={e.company} delay={i * 80}>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "180px 1fr",
-                  gap: 32,
-                  padding: "28px 0",
-                  borderTop: `1px solid ${c.line}`,
-                }}
-                className="pf-exp-row"
-              >
-                <div style={{ fontFamily: mono, fontSize: 13, color: c.muted, paddingTop: 4 }}>
-                  {e.period}
-                </div>
-                <div>
-                  <h3
-                    style={{
-                      fontFamily: display,
-                      fontSize: "clamp(1.25rem, 3vw, 1.6rem)",
-                      fontWeight: 600,
-                      margin: 0,
-                    }}
-                  >
-                    {e.role}
-                  </h3>
-                  <div style={{ fontSize: 15, color: c.accent, margin: "4px 0 12px" }}>
-                    {e.company}
-                  </div>
-                  <p style={{ fontSize: 16, lineHeight: 1.6, color: c.ink, margin: 0, maxWidth: 560 }}>
-                    {e.summary}
-                  </p>
-                </div>
-              </div>
+      {/* ── 프로젝트 ── */}
+      <section id="work" className={`${s.section} ${s.workSection}`}>
+        <Reveal className={s.workLabel}>
+          <Label>selected work</Label>
+        </Reveal>
+        <div>
+          {projects.map((p, i) => (
+            <Reveal key={p.title} delay={i * 60}>
+              <ProjectRow
+                project={p}
+                index={i}
+                open={openProject === i}
+                onToggle={() => setOpenProject(openProject === i ? -1 : i)}
+              />
             </Reveal>
           ))}
-          <div style={{ borderTop: `1px solid ${c.line}` }} />
-        </section>
+          <div className={s.projectEnd} />
+        </div>
+      </section>
 
-        {/* ── 연락처 / 푸터 ── */}
-        <footer id="contact" style={{ background: c.ink, color: c.bg }}>
-          <div style={{ ...section, paddingTop: 90, paddingBottom: 60 }}>
-            <Reveal style={{ marginBottom: 18, display: "flex", alignItems: "center", gap: 10 }}>
-              <span aria-hidden="true" style={{ width: 22, height: 2, background: "#8f8fff", display: "inline-block" }} />
-              <span
-                style={{ fontFamily: mono, fontSize: 12, fontWeight: 500, letterSpacing: "0.18em", color: "#8f8fff", textTransform: "uppercase" }}
-              >
-                contact
-              </span>
-            </Reveal>
+      {/* ── 소개 + 스킬 ── */}
+      <section id="about" className={s.about}>
+        <div className={`${s.section} ${s.aboutInner}`}>
+          <Reveal className={s.aboutLabel}>
+            <Label>about</Label>
+          </Reveal>
+          <div className={s.aboutGrid}>
             <Reveal>
-              <h2
-                style={{
-                  fontFamily: display,
-                  fontWeight: 700,
-                  fontSize: "clamp(2rem, 7vw, 4rem)",
-                  lineHeight: 1.02,
-                  letterSpacing: "-0.02em",
-                  margin: 0,
-                }}
-              >
-                함께 만들어요.
-              </h2>
-            </Reveal>
-            <Reveal delay={80}>
-              <a
-                href={`mailto:${profile.email}`}
-                style={{
-                  display: "inline-block",
-                  fontFamily: mono,
-                  fontSize: "clamp(1rem, 3vw, 1.3rem)",
-                  color: c.bg,
-                  textDecoration: "none",
-                  marginTop: 24,
-                  borderBottom: "1px solid #5a5aff",
-                  paddingBottom: 4,
-                }}
-              >
-                {profile.email}
-              </a>
-            </Reveal>
-            <Reveal
-              delay={140}
-              style={{
-                display: "flex",
-                gap: 24,
-                marginTop: 44,
-                flexWrap: "wrap",
-                fontFamily: mono,
-                fontSize: 13,
-              }}
-            >
-              {socials.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  style={{ color: "#bdbdbd", textDecoration: "none" }}
+              {about.map((para, i) => (
+                <p
+                  key={i}
+                  className={`${s.aboutPara} ${i === 0 ? s.aboutParaFirst : ""}`.trim()}
                 >
-                  {s.label} ↗
-                </a>
+                  {para}
+                </p>
               ))}
             </Reveal>
-            <div
-              style={{
-                marginTop: 64,
-                paddingTop: 24,
-                borderTop: "1px solid rgba(255,255,255,0.12)",
-                fontFamily: mono,
-                fontSize: 12,
-                color: "#888",
-                display: "flex",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-                gap: 12,
-              }}
-            >
-              <span>© {new Date().getFullYear()} {profile.name}</span>
-              <span>Built with React</span>
-            </div>
+            <Reveal delay={120} className={s.skillsCol}>
+              {skills.map((group) => (
+                <div key={group.group}>
+                  <div className={s.skillGroupLabel}>{group.group}</div>
+                  <div className={s.skillItems}>
+                    {group.items.map((it) => (
+                      <span key={it} className={s.skillTag}>
+                        {it}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </Reveal>
           </div>
-        </footer>
-      </div>
+        </div>
+      </section>
+
+      {/* ── 경력 ── */}
+      <section id="experience" className={`${s.section} ${s.expSection}`}>
+        <Reveal className={s.expLabel}>
+          <Label>experience</Label>
+        </Reveal>
+        {experience.map((e, i) => (
+          <Reveal key={e.company} delay={i * 80}>
+            <div className={s.expRow}>
+              <div className={s.expPeriod}>{e.period}</div>
+              <div>
+                <h3 className={s.expRole}>{e.role}</h3>
+                <div className={s.expCompany}>{e.company}</div>
+                <p className={s.expSummary}>{e.summary}</p>
+              </div>
+            </div>
+          </Reveal>
+        ))}
+        <div className={s.expEnd} />
+      </section>
+
+      {/* ── 연락처 / 푸터 ── */}
+      <footer id="contact" className={s.footer}>
+        <div className={`${s.section} ${s.footerInner}`}>
+          <Reveal className={s.contactLabel}>
+            <span aria-hidden="true" className={s.contactBar} />
+            <span className={s.contactLabelText}>contact</span>
+          </Reveal>
+          <Reveal>
+            <h2 className={s.contactHeading}>함께 만들어요.</h2>
+          </Reveal>
+          <Reveal delay={80}>
+            <a href={`mailto:${profile.email}`} className={s.contactEmail}>
+              {profile.email}
+            </a>
+          </Reveal>
+          <Reveal delay={140} className={s.socials}>
+            {socials.map((social) => (
+              <a key={social.label} href={social.href} className={s.social}>
+                {social.label} ↗
+              </a>
+            ))}
+          </Reveal>
+          <div className={s.footerBottom}>
+            <span>
+              © {new Date().getFullYear()} {profile.name}
+            </span>
+            <span>Built with React</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

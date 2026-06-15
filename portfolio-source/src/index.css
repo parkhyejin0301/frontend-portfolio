@@ -1,0 +1,52 @@
+/* 디자인 토큰 (전역) — 컴포넌트 스타일은 *.module.css 에서 var() 로 참조 */
+:root {
+  --bg: #ffffff;
+  --bg-alt: #f6f6f2;
+  --ink: #141413;
+  --muted: #76766e;
+  --line: #e8e8e2;
+
+  /* 액센트 — 단색은 포커스/선택 등 그라데이션이 안 먹는 곳에 사용 */
+  --accent: #1b33e8;
+  --accent-2: #7c3aed;
+  /* 은근한 화려함의 핵심: 보라 → 블루 그라데이션 */
+  --gradient: linear-gradient(115deg, #7c3aed 0%, #1b33e8 100%);
+  --gradient-soft: linear-gradient(
+    115deg,
+    rgba(124, 58, 237, 0.12) 0%,
+    rgba(27, 51, 232, 0.12) 100%
+  );
+
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
