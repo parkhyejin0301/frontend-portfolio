@@ -1,0 +1,15 @@
+# 의존성 / 빌드 산출물
+node_modules
+dist
+.vite
+
+# 에디터 / OS
+.idea
+.vscode
+.DS_Store
+
+# 로그
+*.log
+
+# 툴
+.playwright-mcp
