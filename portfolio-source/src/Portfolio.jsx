@@ -103,16 +103,6 @@ const data = {
       image: boImg,
       links: [{ label: "Preview", href: boImg }],
     },
-    {
-      title: "기업 홈페이지 퍼블리싱",
-      year: "웹 에이전시",
-      kind: "Publishing",
-      tagline: "다양한 산업군 기업 홈페이지 구축 · WA 인증",
-      description:
-        "예림도어·코코도르·더벤티·가마치통닭·현대경제연구원·서울남부지역 장애인보건의료센터·롯데중앙연구소·하나비카레 등 다수 기업 홈페이지를 구축했습니다. 접근성 가이드라인을 준수한 마크업으로 웹 접근성 마크(WA) 인증 획득에 기여했고, 이때 다진 마크업·접근성 기반이 프론트엔드 전환의 토대가 되었습니다.",
-      tech: ["HTML5", "CSS3", "JavaScript", "웹 접근성"],
-      links: [],
-    },
   ],
   experience: [
     {
