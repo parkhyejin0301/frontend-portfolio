@@ -111,18 +111,7 @@ const data = {
       description:
         "예림도어·코코도르·더벤티·가마치통닭·현대경제연구원·서울남부지역 장애인보건의료센터·롯데중앙연구소·하나비카레 등 다수 기업 홈페이지를 구축했습니다. 접근성 가이드라인을 준수한 마크업으로 웹 접근성 마크(WA) 인증 획득에 기여했고, 이때 다진 마크업·접근성 기반이 프론트엔드 전환의 토대가 되었습니다.",
       tech: ["HTML5", "CSS3", "JavaScript", "웹 접근성"],
-      links: [
-        { label: "예림도어", href: "https://www.yerim.net/kor/main/main.html" },
-        {
-          label: "더벤티",
-          href: "https://theventi.co.kr/new2022/main/main.html",
-        },
-        {
-          label: "코코도르",
-          href: "https://cocodorcorp.com/kor/main/main.html",
-        },
-        { label: "현대경제연구원", href: "https://www.hri.co.kr/kor/main" },
-      ],
+      links: [],
     },
   ],
   experience: [
@@ -139,6 +128,50 @@ const data = {
       period: "퍼블리싱 3년",
       summary:
         "다양한 산업군의 기업 홈페이지를 구축하며 웹 표준·접근성·반응형 퍼블리싱 역량을 쌓았습니다. 웹 접근성 마크(WA) 인증 획득에 기여했고, 퍼블리싱 단계에서 컴포넌트 재사용 구조를 고민하며 프론트엔드 전환의 기반을 다졌습니다.",
+      companies: [
+        {
+          name: "이엑스마루",
+          type: "웹 에이전시",
+          period: "2021.02.03 ~ 2022.04.01",
+        },
+        {
+          name: "주식회사 매스티지",
+          type: "웹 에이전시",
+          period: "2022.04.04 ~ 2023.11.22",
+        },
+      ],
+      links: [
+        { label: "예림도어", href: "https://www.yerim.net/kor/main/main.html" },
+        {
+          label: "더벤티",
+          href: "https://theventi.co.kr/new2022/main/main.html",
+        },
+        {
+          label: "코코도르",
+          href: "https://cocodorcorp.com/kor/main/main.html",
+        },
+        { label: "현대경제연구원", href: "https://www.hri.co.kr/kor/main" },
+      ],
+    },
+  ],
+  history: [
+    {
+      badge: "대학교",
+      school: "인하대학교",
+      meta: "학사 · 본교 · 인천",
+      period: "2013.03 ~ 2018.02",
+      rows: [
+        { k: "전공", v: "의류디자인학 (본교) · 자연계열(생활과학) / 주간" },
+        { k: "학점", v: "3.31 / 4.5" },
+        { k: "졸업구분", v: "졸업" },
+      ],
+    },
+    {
+      badge: "고등학교",
+      school: "김포고등학교",
+      meta: "인문 · 주간 · 경기",
+      period: "2010.03 ~ 2013.02",
+      rows: [{ k: "졸업구분", v: "졸업" }],
     },
   ],
   socials: [
@@ -157,23 +190,17 @@ function Label({ children }) {
   );
 }
 
-/* 스크롤 진입 시 부드럽게 나타나는 래퍼 */
-function Reveal({
-  children,
-  delay = 0,
-  as: Tag = "div",
-  className = "",
-  ...rest
-}) {
+/* 요소가 뷰포트에 들어왔는지 한 번만 감지하는 훅 (Reveal·타임라인 공용) */
+function useInView(threshold = 0.15) {
   const ref = useRef(null);
-  const [shown, setShown] = useState(false);
+  const [inView, setInView] = useState(false);
   useEffect(() => {
     const reduce =
       typeof window !== "undefined" &&
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
-      setShown(true);
+      setInView(true);
       return;
     }
     const el = ref.current;
@@ -181,20 +208,33 @@ function Reveal({
     const obs = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting) {
-          setShown(true);
+          setInView(true);
           obs.disconnect();
         }
       },
-      { threshold: 0.15 }
+      { threshold }
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
+  }, [threshold]);
+  return [ref, inView];
+}
+
+/* 스크롤 진입 시 부드럽게 나타나는 래퍼 */
+function Reveal({
+  children,
+  delay = 0,
+  as: Tag = "div",
+  className = "",
+  style,
+  ...rest
+}) {
+  const [ref, shown] = useInView(0.15);
   return (
     <Tag
       ref={ref}
       className={`${s.reveal} ${shown ? s.revealShown : ""} ${className}`.trim()}
-      style={{ "--reveal-delay": `${delay}ms` }}
+      style={{ "--reveal-delay": `${delay}ms`, ...style }}
       {...rest}
     >
       {children}
@@ -204,9 +244,26 @@ function Reveal({
 
 /* 클릭하면 펼쳐지는 프로젝트 행 */
 function ProjectRow({ project, index, open, onToggle }) {
+  const btnRef = useRef(null);
+
+  // 행 위에서 마우스를 따라오는 스포트라이트(--px/--py) 위치 갱신
+  const onMove = (e) => {
+    const el = btnRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--px", `${e.clientX - r.left}px`);
+    el.style.setProperty("--py", `${e.clientY - r.top}px`);
+  };
+
   return (
     <div className={s.projectRow}>
-      <button onClick={onToggle} aria-expanded={open} className={s.projectBtn}>
+      <button
+        ref={btnRef}
+        onMouseMove={onMove}
+        onClick={onToggle}
+        aria-expanded={open}
+        className={s.projectBtn}
+      >
         <span className={s.projectIndex}>
           {String(index + 1).padStart(2, "0")}
         </span>
@@ -277,22 +334,62 @@ function ProjectRow({ project, index, open, onToggle }) {
   );
 }
 
-export default function Portfolio() {
-  const { profile, about, skills, projects, experience, socials } = data;
-  const [openProject, setOpenProject] = useState(0);
-  const heroRef = useRef(null);
+const NAV_ITEMS = ["work", "about", "history", "experience", "contact"];
 
-  // 마우스를 따라 히어로 광채(--mx/--my) 위치 갱신
-  const onHeroMove = (e) => {
-    const el = heroRef.current;
+export default function Portfolio() {
+  const { profile, about, skills, projects, experience, history, socials } =
+    data;
+  const [openProject, setOpenProject] = useState(0);
+
+  // 다크/라이트 테마 — 저장값 → 시스템 설정 순으로 초기화
+  const [theme, setTheme] = useState(() => {
+    if (typeof window === "undefined") return "light";
+    const saved = localStorage.getItem("theme");
+    if (saved === "light" || saved === "dark") return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  });
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  // 스크롤 스파이 — 현재 화면 중앙에 걸친 섹션을 nav에 활성 표시
+  const [activeSection, setActiveSection] = useState("work");
+  useEffect(() => {
+    const els = NAV_ITEMS.map((id) => document.getElementById(id)).filter(
+      Boolean
+    );
+    if (!els.length) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActiveSection(e.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px", threshold: 0 }
+    );
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+
+  // 타임라인 레일·도트가 스크롤 진입에 맞춰 그려지도록 감지
+  const [timelineRef, timelineIn] = useInView(0.2);
+
+  // 마우스를 따라 페이지 전체 광채(--mx/--my) 위치 갱신 (뷰포트 좌표)
+  const rootRef = useRef(null);
+  const onPageMove = (e) => {
+    const el = rootRef.current;
     if (!el) return;
-    const rect = el.getBoundingClientRect();
-    el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
-    el.style.setProperty("--my", `${e.clientY - rect.top}px`);
+    el.style.setProperty("--mx", `${e.clientX}px`);
+    el.style.setProperty("--my", `${e.clientY}px`);
   };
 
   return (
-    <div>
+    <div ref={rootRef} onMouseMove={onPageMove}>
+      {/* 마우스를 따라오는 광채 — 페이지 전역 고정 레이어 */}
+      <div className={s.pageGlow} aria-hidden="true" />
       {/* ── 상단 내비게이션 ── */}
       <nav className={s.nav}>
         <div className={`${s.section} ${s.navInner}`}>
@@ -300,24 +397,35 @@ export default function Portfolio() {
             {profile.initials}
             <span className={s.navAccent}>.</span>
           </span>
-          <div className={s.navLinks}>
-            {["work", "about", "experience", "contact"].map((item) => (
-              <a key={item} href={`#${item}`} className={s.navLink}>
-                {item}
-              </a>
-            ))}
+          <div className={s.navRight}>
+            <div className={s.navLinks}>
+              {NAV_ITEMS.map((item) => (
+                <a
+                  key={item}
+                  href={`#${item}`}
+                  className={`${s.navLink} ${activeSection === item ? s.navLinkActive : ""}`.trim()}
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
+            <button
+              type="button"
+              className={s.themeToggle}
+              onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+              aria-label={theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}
+              title={theme === "dark" ? "라이트 모드" : "다크 모드"}
+            >
+              <span className={s.themeToggleIcon} aria-hidden="true">
+                {theme === "dark" ? "☀" : "☾"}
+              </span>
+            </button>
           </div>
         </div>
       </nav>
 
       {/* ── 히어로 ── */}
-      <header
-        className={`${s.section} ${s.header}`}
-        onMouseMove={onHeroMove}
-        ref={heroRef}
-      >
-        <div className={s.heroAmbient} aria-hidden="true" />
-        <div className={s.heroGlow} aria-hidden="true" />
+      <header className={`${s.section} ${s.header}`}>
         <div className={s.heroContent}>
           {profile.available && (
             <Reveal className={s.availBadge}>
@@ -398,6 +506,45 @@ export default function Portfolio() {
         </div>
       </section>
 
+      {/* ── 학력 연혁 ── */}
+      <section id="history" className={`${s.section} ${s.historySection}`}>
+        <Reveal className={s.historyLabel}>
+          <Label>history</Label>
+        </Reveal>
+        <div
+          ref={timelineRef}
+          className={`${s.timeline} ${timelineIn ? s.timelineIn : ""}`.trim()}
+        >
+          <span className={s.timelineRail} aria-hidden="true">
+            <span className={s.timelineRailFill} />
+          </span>
+          {history.map((h, i) => (
+            <Reveal
+              key={h.school}
+              delay={i * 80}
+              className={s.timelineItem}
+              style={{ "--i": i }}
+            >
+              <span className={s.timelineDot} aria-hidden="true" />
+              <div className={s.timelinePeriod}>{h.period}</div>
+              <div className={s.timelineBody}>
+                <span className={s.timelineBadge}>{h.badge}</span>
+                <h3 className={s.timelineSchool}>{h.school}</h3>
+                <div className={s.timelineMeta}>{h.meta}</div>
+                <dl className={s.timelineRows}>
+                  {h.rows.map((r) => (
+                    <div key={r.k} className={s.timelineRow}>
+                      <dt className={s.timelineRowKey}>{r.k}</dt>
+                      <dd className={s.timelineRowVal}>{r.v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
       {/* ── 경력 ── */}
       <section id="experience" className={`${s.section} ${s.expSection}`}>
         <Reveal className={s.expLabel}>
@@ -411,6 +558,32 @@ export default function Portfolio() {
                 <h3 className={s.expRole}>{e.role}</h3>
                 <div className={s.expCompany}>{e.company}</div>
                 <p className={s.expSummary}>{e.summary}</p>
+                {e.companies && e.companies.length > 0 && (
+                  <ul className={s.expCompanyList}>
+                    {e.companies.map((c) => (
+                      <li key={c.name} className={s.expCompanyItem}>
+                        <span className={s.expCompanyName}>{c.name}</span>
+                        <span className={s.expCompanyType}>{c.type}</span>
+                        <span className={s.expCompanyPeriod}>{c.period}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {e.links && e.links.length > 0 && (
+                  <div className={s.expLinkList}>
+                    {e.links.map((l) => (
+                      <a
+                        key={l.label}
+                        className={s.link}
+                        href={l.href}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {l.label} →
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </Reveal>
@@ -426,7 +599,6 @@ export default function Portfolio() {
             <span className={s.contactLabelText}>contact</span>
           </Reveal>
           <Reveal>
-            <h2 className={s.contactHeading}>함께 만들어요.</h2>
           </Reveal>
           <Reveal delay={80}>
             <a href={`mailto:${profile.email}`} className={s.contactEmail}>

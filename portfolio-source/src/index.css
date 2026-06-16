@@ -20,6 +20,52 @@
   --font-display: "Space Grotesk", system-ui, sans-serif;
   --font-body: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* 표면 토큰 — 테마에 따라 분기되는 값들 */
+  --nav-bg: rgba(255, 255, 255, 0.8);
+  --surface-glow: rgba(124, 58, 237, 0.1);
+  /* 히어로 마우스 글로우 — 라이트에선 은은하게 */
+  --hero-glow: rgba(124, 58, 237, 0.1);
+  color-scheme: light;
+}
+
+/* 다크 테마 — 같은 변수 이름을 덮어써서 컴포넌트 코드는 그대로 동작 */
+[data-theme="dark"] {
+  --bg: #0d0d0f;
+  --bg-alt: #16161b;
+  --ink: #ededed;
+  --muted: #9a9aa3;
+  --line: #2a2a31;
+
+  --accent: #8ea2ff;
+  --accent-2: #c4b5fd;
+  --gradient: linear-gradient(115deg, #c4b5fd 0%, #8ea2ff 100%);
+  --gradient-soft: linear-gradient(
+    115deg,
+    rgba(196, 181, 253, 0.16) 0%,
+    rgba(142, 162, 255, 0.16) 100%
+  );
+
+  --nav-bg: rgba(13, 13, 15, 0.72);
+  --surface-glow: rgba(142, 162, 255, 0.14);
+  /* 어두운 배경에선 더 밝고 진하게 — 마우스 포인터 글로우가 보이도록 */
+  --hero-glow: rgba(160, 174, 255, 0.22);
+  color-scheme: dark;
+}
+
+/* 테마 전환 시 부드럽게 — reduced-motion 사용자는 즉시 전환 */
+body,
+body * {
+  transition:
+    background-color 0.4s ease,
+    border-color 0.4s ease,
+    color 0.4s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  body,
+  body * {
+    transition: none !important;
+  }
 }
 
 * {
