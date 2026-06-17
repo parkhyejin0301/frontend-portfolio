@@ -430,7 +430,9 @@ export default function Portfolio() {
             {profile.role}
           </Reveal>
           <Reveal as="p" delay={180} className={s.heroTagline}>
-            {profile.tagline}
+            화면 구현을 넘어 도메인 전반을 책임지는 프론트엔드 엔지니어입니다.
+            <br />
+            퍼블리셔에서 출발해 성능·데이터·공통 인프라까지 영역을 넓혀왔습니다.
           </Reveal>
           <Reveal delay={240} className={s.heroMeta}>
             <a className={s.link} href={`mailto:${profile.email}`}>
